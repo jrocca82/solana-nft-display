@@ -1,0 +1,45 @@
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL, TransactionSignature } from '@solana/web3.js';
+import { useCallback } from 'react';
+import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
+
+const RequestAirdrop = () => {
+    const { connection } = useConnection();
+    const { publicKey } = useWallet();
+    const { getUserSOLBalance } = useUserSOLBalanceStore();
+
+    const onClick = useCallback(async () => {
+        if (!publicKey) {
+            console.log('error', 'Wallet not connected!');
+            alert({ type: 'error', message: 'error', description: 'Wallet not connected!' });
+            return;
+        }
+
+        let signature: TransactionSignature = '';
+
+        try {
+            signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
+            await connection.confirmTransaction(signature, 'confirmed');
+            alert({ type: 'success', message: 'Airdrop successful!', txid: signature });
+
+            getUserSOLBalance(publicKey, connection);
+        } catch (error: any) {
+            alert({ type: 'error', message: `Airdrop failed!`, description: error?.message, txid: signature });
+            console.log('error', `Airdrop failed! ${error?.message}`, signature);
+        }
+    }, [publicKey, connection, getUserSOLBalance]);
+
+    return (
+        <div>
+            <button
+                className="px-8 m-2 btn animate-pulse bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
+                onClick={onClick}
+            >
+                <span>Airdrop 1 </span>
+            </button>
+        </div>
+    );
+};
+
+export default RequestAirdrop;
+
