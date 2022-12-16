@@ -1,34 +1,23 @@
-import { AppProps } from 'next/app';
-import Head from 'next/head';
-import { ContextProvider } from '../contexts/ContextProvider';
+import { AppProps } from "next/app";
+import { ChakraProvider } from "@chakra-ui/react";
+import theme from "../styles/theme";
+import "@fontsource/oxygen";
+import { ConnectionContext } from "../contexts/ContextProvider";
+import PageContainer from "../components/PageContainer";
 
-import Notifications from '../components/Notification'
-import AppBar from '../components/AppBar';
-import ContentContainer from '../components/ContentContainer';
-import Footer from '../components/Footer';
-
-require('@solana/wallet-adapter-react-ui/styles.css');
-require('../styles/globals.css');
+require("@solana/wallet-adapter-react-ui/styles.css");
 
 function App({ Component, pageProps }: AppProps) {
-    return (
-        <>
-          <Head>
-            <title>Solana Scaffold Lite</title>
-          </Head>
-
-          <ContextProvider>
-            <div className="flex flex-col h-screen">
-              <Notifications />
-              <AppBar/>
-              <ContentContainer>
-                <Component {...pageProps} />
-              </ContentContainer>
-              <Footer/>
-            </div>
-          </ContextProvider>
-        </>
-    );
-};
+	return (
+		<ChakraProvider theme={theme}>
+			<ConnectionContext>
+				{/* <Notifications /> */}
+				<PageContainer>
+					<Component {...pageProps} />
+				</PageContainer>
+			</ConnectionContext>
+		</ChakraProvider>
+	);
+}
 
 export default App;

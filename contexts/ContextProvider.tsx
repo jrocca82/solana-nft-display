@@ -1,60 +1,42 @@
-import { WalletError } from "@solana/wallet-adapter-base";
+import React, { ReactNode, useMemo } from "react";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
 	ConnectionProvider,
 	WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletModalProvider as ReactUIWalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
+	GlowWalletAdapter,
 	PhantomWalletAdapter,
+	SlopeWalletAdapter,
 	SolflareWalletAdapter,
 	TorusWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import * as web3 from "@solana/web3.js";
-import { FC, ReactNode, useCallback } from "react";
-import { AutoConnectProvider, useAutoConnect } from "./AutoConnectProvider";
-import { NetworkConfigurationProvider } from "./NetworkConfigurationProvider";
+import { clusterApiUrl } from "@solana/web3.js";
 
-const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
-	const { autoConnect } = useAutoConnect();
+import "@solana/wallet-adapter-react-ui/styles.css";
 
-	const endpoint = web3.clusterApiUrl("devnet");
+export const ConnectionContext = ({ children }: { children: ReactNode }) => {
+	const network = WalletAdapterNetwork.Devnet;
 
-	const wallets = [
-		new PhantomWalletAdapter(),
-		new SolflareWalletAdapter(),
-		new TorusWalletAdapter(),
-	];
+	const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
-	const onError = useCallback((error: WalletError) => {
-		alert({
-			type: "error",
-			message: error.message ? `${error.name}: ${error.message}` : error.name,
-		});
-		console.error(error);
-	}, []);
+	const wallets = useMemo(
+		() => [
+			new PhantomWalletAdapter(),
+			new GlowWalletAdapter(),
+			new SlopeWalletAdapter(),
+			new SolflareWalletAdapter({ network }),
+			new TorusWalletAdapter(),
+		],
+		[network]
+	);
 
 	return (
-		// TODO: updates needed for updating and referencing endpoint: wallet adapter rework
 		<ConnectionProvider endpoint={endpoint}>
-			<WalletProvider
-				wallets={wallets}
-				onError={onError}
-				autoConnect={autoConnect}
-			>
-				<ReactUIWalletModalProvider>{children}</ReactUIWalletModalProvider>
+			<WalletProvider wallets={wallets} autoConnect>
+				<WalletModalProvider>{children}</WalletModalProvider>
 			</WalletProvider>
 		</ConnectionProvider>
-	);
-};
-
-export const ContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
-	return (
-		<>
-			<NetworkConfigurationProvider>
-				<AutoConnectProvider>
-					<WalletContextProvider>{children}</WalletContextProvider>
-				</AutoConnectProvider>
-			</NetworkConfigurationProvider>
-		</>
 	);
 };

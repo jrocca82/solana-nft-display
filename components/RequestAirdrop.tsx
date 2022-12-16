@@ -1,45 +1,77 @@
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL, TransactionSignature } from '@solana/web3.js';
-import { useCallback } from 'react';
-import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
+import { Button, chakra, Flex, Text } from "@chakra-ui/react";
+import { createStandaloneToast } from "@chakra-ui/toast";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+	LAMPORTS_PER_SOL,
+	TransactionSignature,
+	sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import { useCallback, useState } from "react";
+import useUserSOLBalanceStore from "../stores/useUserSOLBalanceStore";
+
+const { ToastContainer, toast } = createStandaloneToast();
 
 const RequestAirdrop = () => {
-    const { connection } = useConnection();
-    const { publicKey } = useWallet();
-    const { getUserSOLBalance } = useUserSOLBalanceStore();
+	const { connection } = useConnection();
+	const { publicKey } = useWallet();
+	const { getUserSOLBalance } = useUserSOLBalanceStore();
 
-    const onClick = useCallback(async () => {
-        if (!publicKey) {
-            console.log('error', 'Wallet not connected!');
-            alert({ type: 'error', message: 'error', description: 'Wallet not connected!' });
-            return;
-        }
+	const onClick = useCallback(async () => {
+		if (!publicKey) {
+			toast({
+				title: "An error occurred.",
+				description: "Cannot find wallet",
+				status: "error",
+				duration: 9000,
+				isClosable: true,
+			});
+			return;
+		}
 
-        let signature: TransactionSignature = '';
+		let signature: TransactionSignature = "";
 
-        try {
-            signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
-            await connection.confirmTransaction(signature, 'confirmed');
-            alert({ type: 'success', message: 'Airdrop successful!', txid: signature });
+		try {
+			signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
 
-            getUserSOLBalance(publicKey, connection);
-        } catch (error: any) {
-            alert({ type: 'error', message: `Airdrop failed!`, description: error?.message, txid: signature });
-            console.log('error', `Airdrop failed! ${error?.message}`, signature);
-        }
-    }, [publicKey, connection, getUserSOLBalance]);
+			// Not actually deprecated
+			await connection.confirmTransaction(signature, "confirmed");
+			toast({
+				title: "Success!",
+				description: "Airdrop successful",
+				status: "success",
+				duration: 9000,
+				isClosable: true,
+			});
 
-    return (
-        <div>
-            <button
-                className="px-8 m-2 btn animate-pulse bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
-                onClick={onClick}
-            >
-                <span>Airdrop 1 </span>
-            </button>
-        </div>
-    );
+			getUserSOLBalance(publicKey, connection);
+		} catch (error: any) {
+			toast({
+				title: "Uh-oh!",
+				description: "Airdrop failed",
+				status: "error",
+				duration: 9000,
+				isClosable: true,
+			});
+		}
+	}, [publicKey, connection, getUserSOLBalance]);
+
+	return (
+		<ButtonWrapper>
+			<Button onClick={onClick} variant="solana" size="md">
+				<Text size="sm">Airdrop 1 SOL</Text>
+			</Button>
+			<ToastContainer />
+		</ButtonWrapper>
+	);
 };
 
 export default RequestAirdrop;
 
+const ButtonWrapper = chakra(Flex, {
+	baseStyle: {
+		flexDirection: "column",
+		justifyContent: "space-around",
+		alignItems: "center",
+		marginY: "20px",
+	},
+});

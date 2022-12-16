@@ -1,17 +1,8 @@
-import type { NextPage } from "next"
-import Head from "next/head"
-import { DisplayView } from "../views"
+import { NextPage } from "next";
+import FetchNft from "../components/FetchNft";
 
-const Display: NextPage = () => {
-  return (
-    <div>
-      <Head>
-        <title>Solana Scaffold</title>
-        <meta name="description" content="Basic Functionality" />
-      </Head>
-      <DisplayView />
-    </div>
-  )
-}
+const DisplayView: NextPage = () => {
+	return <FetchNft />;
+};
 
-export default Display
+export default DisplayView;
