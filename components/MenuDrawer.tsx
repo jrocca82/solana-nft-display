@@ -41,7 +41,7 @@ const MenuDrawer = () => {
 						<Link href="/display">
 							<ListItem size="sm">Display NFT</ListItem>
 						</Link>
-						<Link href="/candymachine">
+						<Link href="/candy-machine">
 							<ListItem size="sm">Candy Machine</ListItem>
 						</Link>
 					</DrawerBody>

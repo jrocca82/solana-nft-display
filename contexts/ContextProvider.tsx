@@ -14,7 +14,7 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
 
-import "@solana/wallet-adapter-react-ui/styles.css";
+require("@solana/wallet-adapter-react-ui/styles.css");
 
 export const ConnectionContext = ({ children }: { children: ReactNode }) => {
 	const network = WalletAdapterNetwork.Devnet;

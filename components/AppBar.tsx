@@ -3,6 +3,7 @@ import Link from "next/link";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Text, Flex, Image, chakra } from "@chakra-ui/react";
 import MenuDrawer from "./MenuDrawer";
+require("@solana/wallet-adapter-react-ui/styles.css");
 
 const AppBar = () => {
 	return (
@@ -17,7 +18,7 @@ const AppBar = () => {
 					<Link href="/display">
 						<Text>Display NFT</Text>
 					</Link>
-					<Link href="/candymachine">
+					<Link href="/candy-machine">
 						<Text>Candy Machine</Text>
 					</Link>
 				</LinkWrapper>

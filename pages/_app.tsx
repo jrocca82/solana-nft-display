@@ -9,14 +9,14 @@ require("@solana/wallet-adapter-react-ui/styles.css");
 
 function App({ Component, pageProps }: AppProps) {
 	return (
-		<ChakraProvider theme={theme}>
-			<ConnectionContext>
+		<ConnectionContext>
+			<ChakraProvider theme={theme}>
 				{/* <Notifications /> */}
 				<PageContainer>
 					<Component {...pageProps} />
 				</PageContainer>
-			</ConnectionContext>
-		</ChakraProvider>
+			</ChakraProvider>
+		</ConnectionContext>
 	);
 }
 
